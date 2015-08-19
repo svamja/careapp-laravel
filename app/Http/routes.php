@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/users/log_fb_response', 'UsersController@log_fb_response');
+
