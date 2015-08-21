@@ -1,13 +1,15 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "name": "svamja/careapp-laravel",
+    "description": "Project CareApp",
+    "keywords": ["CareApp"],
+    "license": "GNU GPL v2",
     "type": "project",
     "require": {
         "php": ">=5.5.9",
         "laravel/framework": "5.1.*",
-        "barryvdh/laravel-cors": "0.7.x"
+        "barryvdh/laravel-cors": "0.7.x",
+        "doctrine/couchdb": "@dev",
+        "facebook/php-sdk-v4" : "~5.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
