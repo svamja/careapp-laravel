@@ -39,8 +39,17 @@ class AppSetup extends Command
      */
     public function handle()
     {
+
+            // Create Admin User
             $couch = CouchDBClient::create(array(
-                'dbname' => 'careapp_log_db',
+                'dbname' => '_users',
+            ));
+            $http_client = $couch->getHttpClient();
+            $http_client->request('PUT', '/_config/admins/' . env('COUCH_ADMIN_USER'), '"' . env('COUCH_ADMIN_PASS') . '"');
+
+            // Create Databases
+            $couch = CouchDBClient::create(array(
+                'dbname' => '_users',
                 'user' => env('COUCH_ADMIN_USER'),
                 'password' => env('COUCH_ADMIN_PASS'),
             ));
@@ -50,7 +59,7 @@ class AppSetup extends Command
                 "careapp_messages_db",
                 "careapp_log_db", 
             ];
-           foreach($databases as $database) {
+            foreach($databases as $database) {
                 try {
                     $couch->createDatabase($database);
                     $this->info("$database created");
@@ -58,6 +67,25 @@ class AppSetup extends Command
                 catch(Exception $e) {
                      $this->info("$database not created : " . $e->getMessage());
                 }
-           }
+            }
+
+            // Create App User
+            $username = env("COUCH_APP_USER");
+            $user_id = "org.couchdb.user:$username";
+            $user = [
+                '_id' => $user_id,
+                'type' => 'user',
+                'roles' => [],
+                'name' => $username,
+                'password' => env("COUCH_APP_PASS"),
+            ];
+            try {
+                $couch->putDocument($user, $user['_id']);
+                $this->info("App user created");
+            }
+            catch(Exception $e) {
+                $this->info("App user not created.");
+            }
+
      }
 }
