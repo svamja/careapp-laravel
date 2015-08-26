@@ -20,7 +20,7 @@ class UsersController extends Controller
 
             // Logging Response from Facebook into DB
             $couch = CouchDBClient::create(array(
-                'dbname' => 'careapp_full_db',
+                'dbname' => 'careapp_log_db',
                 'user' => env('COUCH_APP_USER'),
                 'password' => env('COUCH_APP_PASS'),
             ));
