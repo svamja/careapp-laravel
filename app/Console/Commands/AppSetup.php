@@ -32,6 +32,73 @@ class AppSetup extends Command
         parent::__construct();
     }
 
+    protected function _slug($text)
+    { 
+        // replace non letter or digits by -
+        $text = preg_replace('~[^\\pL\d]+~u', '-', $text);
+        // trim
+        $text = trim($text, '-');
+        // transliterate
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+        // lowercase
+        $text = strtolower($text);
+        // remove unwanted characters
+        $text = preg_replace('~[^-\w]+~', '', $text);
+        if (empty($text))
+        {
+            return 'n-a';
+        }
+        return $text;
+    }
+
+
+    protected function _create_categories() {
+
+        $couch = CouchDBClient::create(array(
+            'dbname' => 'careapp_passions_db',
+            'user' => env('COUCH_APP_USER'),
+            'password' => env('COUCH_APP_PASS'),
+        ));
+
+        $categories = [
+            "Basic Needs",
+            "Health",
+            "Social",
+            "Children & Youth",
+            "Women",
+            "Seniors & Specially Abled",
+            "Animals",
+            "Safety",
+            "Environment",
+            "Spiritual",
+            "Happiness",
+            "Others",
+        ];
+
+        foreach($categories as $i => $category_text) {
+            $order = $i + 1;
+            $category_slug = $this->_slug($category_text);
+            $category_id = "cat-" . $category_slug;
+            $category = [
+                "_id" =>  $category_id,
+                "type" => "category",
+                "slug" => $category_slug,
+                "name" => $category_text,
+                "order" => $order
+            ];
+
+            try {
+                $couch->putDocument($category, $category['_id']);
+                $this->info("Category added: $category_text");
+            }
+            catch(Exception $e) {
+                $this->info("Unable to add category: $category_text");
+            }
+
+        }
+
+    }
+
     /**
      * Execute the console command.
      *
@@ -86,6 +153,11 @@ class AppSetup extends Command
             catch(Exception $e) {
                 $this->info("App user not created.");
             }
+
+            // Create Categories
+            $this->_create_categories();
+
+
 
      }
 }
