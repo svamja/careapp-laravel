@@ -1,4 +1,4 @@
-## Project CareApp
+## TheCareApp
 
-Laravel server for [Project CareApp](https://github.com/svamja/careapp-ionic)
+Laravel server for [TheCareApp](https://github.com/svamja/careapp-ionic)
 

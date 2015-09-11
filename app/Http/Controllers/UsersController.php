@@ -98,9 +98,12 @@ class UsersController extends Controller
             // Create/Update User
             if($fb_user['picture']['url'] && !$fb_user['picture']['is_silhouette']) {
                 $user['fb_picture'] = $fb_user['picture']['url'];
+                $response['fb_picture'] = $user['fb_picture'];
             }
             $couch->putDocument($user, $user['_id']);
 
+            $response['gender'] = $user['gender'];
+            $response['display_name'] = $user['display_name'];
             $response['status'] = 'success';
             $response['token'] = $user['password'];
 
