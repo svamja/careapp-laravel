@@ -17,7 +17,7 @@ class AppDeleteDocs extends Command
     protected $signature = 'app:delete_docs 
                     {database : Database from which documents will be deleted}
                     {type? : Type of documents to delete.}
-                    {--all? : Delete all documents, except special docs starting with _}
+                    {--all : Delete all documents, except special docs starting with _}
                     ';
 
     /**
