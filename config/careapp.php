@@ -60,8 +60,18 @@ return [
             "_id" => "_design/cities",
             "language" => "javascript",
             "views" => [
-                "all" => [
+                "cities" => [
                     "map" => "function(doc) { if(doc.type == 'city') { emit([doc._id], doc); }  }"
+                ]
+            ]
+        ],
+        [
+            "db" => "careapp_passions_db",
+            "_id" => "_design/countries",
+            "language" => "javascript",
+            "views" => [
+                "countries" => [
+                    "map" => "function(doc) { if(doc.type == 'country') { emit([doc._id], doc); }  }"
                 ]
             ]
         ],

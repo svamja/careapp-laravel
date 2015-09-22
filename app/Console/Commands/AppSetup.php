@@ -186,6 +186,45 @@ class AppSetup extends Command
         }
     }
 
+    public function _add_countries() {
+
+        $couch = CouchDBClient::create(array(
+            'dbname' => 'careapp_passions_db',
+            'user' => env('COUCH_APP_USER'),
+            'password' => env('COUCH_APP_PASS'),
+        ));
+
+        $countries_json = "http://vocab.nic.in/rest.php/country/json";
+        $countries_text = file_get_contents($countries_json);
+        $countries = json_decode($countries_text, true);
+
+        if(empty($countries)) {
+            $this->info("Warning: No countries.");
+            return;
+        }
+
+        $count = 0;
+        $errors = 0;
+        foreach($countries['countries'] as $item) {
+            if($errors > 10) break;
+            $country = [
+                'name' => ucwords(strtolower($item['country']['country_name'])),
+                'code' => strtolower($item['country']['country_id']),
+                'type' => 'country'
+            ];
+            $country['_id'] = 'cty-' . $country['code'];
+            try {
+                $couch->putDocument($country, $country['_id']);
+                $count++;
+            }
+            catch(Exception $e) {
+                $errors++;
+            }
+        }
+        $this->info("$count countries added. $errors errors.");
+        
+    }
+
     /**
      * Execute the console command.
      *
@@ -198,12 +237,17 @@ class AppSetup extends Command
             $this->info("-- USERS & DATABASES --");
             $this->_create_users_dbs();
 
+            // Design Docs
+            $this->info("-- DESIGN DOCS --");
+            $this->_create_design_docs();
+
             // Categories
             $this->info("-- CATEGORIES --");
             $this->_create_categories();
 
-            // Design Docs
-            $this->info("-- DESIGN DOCS --");
-            $this->_create_design_docs();
+            // Countries
+            $this->info("-- COUNTRIES --");
+            $this->_add_countries();
+
      }
 }
