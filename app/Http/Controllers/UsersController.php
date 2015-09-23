@@ -72,8 +72,10 @@ class UsersController extends Controller
             $user_id = "org.couchdb.user:$username";
 
             $user_req = $couch->findDocument($user_id);
+            $is_existing_user = false;
             if($user_req->status == 200 && $user_req->body['_id']) {
                 // User Exists
+                $is_existing_user = true;
                 $user = $user_req->body;
             } 
             else {
@@ -107,6 +109,18 @@ class UsersController extends Controller
             $response['status'] = 'success';
             $response['token'] = $user['password'];
 
+            // If existing user, fetch profile too
+            if($is_existing_user) {
+                $couch = CouchDBClient::create(array(
+                    'dbname' => 'careapp_profiles_db',
+                    'user' => env('COUCH_APP_USER'),
+                    'password' => env('COUCH_APP_PASS'),
+                ));
+                $profile_req = $couch->findDocument($username);
+                if($profile_req->status == 200 && $profile_req->body['_id']) {
+                    $response['profile'] = $profile_req->body;
+                }
+            }
             return $response;
 
         }
