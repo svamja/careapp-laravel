@@ -6,6 +6,7 @@ return [
         "careapp_profiles_db",
         "careapp_passions_db",
         "careapp_messages_db",
+        "careapp_events_db",
         "careapp_log_db", 
     ],
 
@@ -98,6 +99,19 @@ return [
             "views" => [
                 "by_passion_ts" => [
                     "map" => "function(doc) { if(doc.passion_id && doc.posted_on) { emit([doc.passion_id, doc.posted_on], doc); } }"
+                ]
+            ],
+            "filters" => [
+                "by_user" => "function(doc, req) { return doc.author_id == req.userCtx.name; }"
+            ]
+        ],
+        [
+            "db" => "careapp_events_db",
+            "_id" => "_design/events",
+            "language" => "javascript",
+            "views" => [
+                "by_passion_ts" => [
+                    "map" => "function(doc) { if(doc.passion_id && doc.start_ts) { emit([doc.passion_id, doc.start_ts], doc); } }"
                 ]
             ]
         ],
